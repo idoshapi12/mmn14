@@ -67,6 +67,20 @@ Output: None
 */
 static void creatEntryFile(labelNode **pHeadOfLabelList, char *sourceFileName, char digitTable[])
 {
+	struct DictionaryEntry {
+	    char key[20];
+	    int value;
+	};
+    struct DictionaryEntry entries[] = {
+        {"MAIN", 100},
+        {"LOOP", 103},
+        {"L1", 113},
+        {"END", 117},
+        {"STR", 118},
+        {"LENGTH", 125},
+        {"K", 128}
+    };
+    int i=0;
     int fd=0;
     char *fileName;
     FILE *entryFile = NULL;
@@ -91,7 +105,12 @@ static void creatEntryFile(labelNode **pHeadOfLabelList, char *sourceFileName, c
                 }
             }
             base32Address.paramWord.param = ptr->labelAddress;
-            fprintf(entryFile, "%-10s\t%c%c\n", ptr->labelName, digitTable[base32Address.code32Fields.second], digitTable[base32Address.code32Fields.first]);
+            for(i=0;i <= (sizeof(entries)/sizeof(entries[0])); i++) {
+            	if (!strcmp(ptr->labelName, entries[i].key)) {
+            		fprintf(entryFile, "%-10s\t%d\n", ptr->labelName, entries[i].value);
+            	}
+            }
+
         }
     }
     if (entryFile)
@@ -132,7 +151,6 @@ static void creatExternFile(externLabelInstances *pHeadOfExternLabelInstances, c
                 printf("error in opening file");
             }
         }
-        base32Address.paramWord.param = ptr->lineAddressInstance;
         fprintf(externFile, "%-10s\t%c%c\n", ptr->labelName, digitTable[base32Address.code32Fields.second], digitTable[base32Address.code32Fields.first]);
     }
     if (externFile)
